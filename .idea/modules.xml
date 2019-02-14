@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/learningrxjava.iml" filepath="$PROJECT_DIR$/learningrxjava.iml" />
+      <module fileurl="file://$PROJECT_DIR$/learning-rx-java.iml" filepath="$PROJECT_DIR$/learning-rx-java.iml" />
     </modules>
   </component>
 </project>

@@ -1,11 +1,18 @@
 import rx.Observable;
+import rx.Single;
+import rx.schedulers.Schedulers;
 
 public class Chapter1 {
 
-    //Pag 32
+    //12/02 - Pag 32
+    //13/02 - Pag 45
 
     public static void main(String[] args) {
-        helloWorld();
+//        helloWorld();
+//        mapExample();
+//        assyncObservablesExample();
+//        zipExample();
+        mergeSingleExample();
     }
 
     private static void helloWorld() {
@@ -13,5 +20,73 @@ public class Chapter1 {
             s.onNext("Hello World!");
             s.onCompleted();
         }).subscribe(System.out::println);
+    }
+
+    private static void mapExample() {
+        Observable<Integer> o = Observable.create(s -> {
+            s.onNext(1);
+            s.onNext(2);
+            s.onNext(3);
+            s.onCompleted();
+        });
+
+        o.map(i -> "Number " + i);
+
+        printObservable(o);
+    }
+
+    private static void assyncObservablesExample() {
+        Observable<String> a = Observable.create(s -> {
+            new Thread(() -> {
+                s.onNext("one");
+                s.onNext("two");
+                s.onCompleted();
+            }).start();
+        });
+
+        Observable<String> b = Observable.create(s -> {
+            new Thread(() -> {
+                s.onNext("three");
+                s.onNext("four");
+                s.onCompleted();
+            }).start();
+        });
+
+        Observable<String> c = Observable.merge(a, b);
+        printObservable(c);
+    }
+
+    private static void zipExample() {
+        Observable<String> o1 = getDataAsObservable(1);
+        Observable<String> o2 = getDataAsObservable(2);
+
+        Observable o3 = Observable.zip(o1, o2, (x, y) -> {
+            return x + y;
+        });
+
+        printObservable(o3);
+    }
+
+    //TODO verify because it didn't print the values
+    private static void mergeSingleExample() {
+        Observable<String> aMergeB = getDataAsSingle("A").mergeWith(getDataAsSingle("B"));
+        printObservable(aMergeB);
+    }
+
+    private static void printObservable(Observable observable) {
+        observable.subscribe(System.out::println);
+    }
+
+    private static Observable getDataAsObservable(Object data) {
+        return Observable.create(s -> {
+            s.onNext(String.valueOf(data));
+            s.onCompleted();
+        });
+    }
+
+    private static Single getDataAsSingle(Object data) {
+        return Single.create(o -> {
+            o.onSuccess(data);
+        }).subscribeOn(Schedulers.io());
     }
 }
