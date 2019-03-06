@@ -33,7 +33,7 @@ public class Chapter1 {
 
         o.map(i -> "Number " + i);
 
-        printObservable(o);
+        Util.printObservable(o);
     }
 
     private static void assyncObservablesExample() {
@@ -54,7 +54,7 @@ public class Chapter1 {
         });
 
         Observable<String> c = Observable.merge(a, b);
-        printObservable(c);
+        Util.printObservable(c);
     }
 
     private static void zipExample() {
@@ -65,17 +65,13 @@ public class Chapter1 {
             return x + y;
         });
 
-        printObservable(o3);
+        Util.printObservable(o3);
     }
 
     //TODO verify because it didn't print the values
     private static void mergeSingleExample() {
         Observable<String> aMergeB = getDataAsSingle("A").mergeWith(getDataAsSingle("B"));
-        printObservable(aMergeB);
-    }
-
-    private static void printObservable(Observable observable) {
-        observable.subscribe(System.out::println);
+        Util.printObservable(aMergeB);
     }
 
     private static Observable getDataAsObservable(Object data) {
