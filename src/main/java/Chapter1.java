@@ -8,7 +8,7 @@ public class Chapter1 {
     //13/02 - Pag 45
     //25/02 - Pag 47
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 //        helloWorld();
 //        mapExample();
 //        assyncObservablesExample();
@@ -68,10 +68,10 @@ public class Chapter1 {
         Util.printObservable(o3);
     }
 
-    //TODO verify because it didn't print the values
-    private static void mergeSingleExample() {
+    private static void mergeSingleExample() throws InterruptedException {
         Observable<String> aMergeB = getDataAsSingle("A").mergeWith(getDataAsSingle("B"));
         Util.printObservable(aMergeB);
+        Thread.sleep(10000);
     }
 
     private static Observable getDataAsObservable(Object data) {
