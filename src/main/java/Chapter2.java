@@ -1,6 +1,8 @@
 import rx.Observable;
+import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 import twitter4j.*;
+import twitter4j.auth.AccessToken;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +18,7 @@ public class Chapter2 {
     //06/03 - Pag 66
     //14/03 - Pag 69
     //18/03 - Pag 75
+    //20/03 - Pag 82
 
     public static void main(String[] args) throws InterruptedException {
 //        createJust("Vaue");
@@ -30,8 +33,57 @@ public class Chapter2 {
 //        testloadAll();
 //        testTimer();
 //        testInterval();
-        testObserve();
+//        testObserve();
+//        testWithoutPublishRefCount();
+        testPublishRefCount();
         Thread.sleep(10000);
+    }
+
+    private static Observable<Status> getTwitterObservable() {
+        return Observable.create(subscriber -> {
+            System.out.println("Establishing connection");
+
+            AccessToken accessToken = new AccessToken("", "");
+
+            TwitterStream twitterStream = new TwitterStreamFactory().getInstance(accessToken);
+
+            subscriber.add(Subscriptions.create(() -> {
+                System.out.println("Disconnecting");
+                twitterStream.shutdown();
+            }));
+            twitterStream.sample();
+        });
+    }
+
+    private static void testPublishRefCount() {
+        Observable<Status> observable = getTwitterObservable();
+
+        Observable<Status> lazy = observable.publish().refCount();
+
+        System.out.println("Before subscribers");
+        Subscription sub1 = lazy.subscribe();
+        System.out.println("Subscribed 1");
+        Subscription sub2 = lazy.subscribe();
+        System.out.println("Subscribed 2");
+        sub1.unsubscribe();
+        System.out.println("Unsubscribed 1");
+        sub2.unsubscribe();
+        System.out.println("Unsubscribed 2");
+    }
+
+    private static void testWithoutPublishRefCount() {
+        Observable<Status> observable = getTwitterObservable();
+
+
+        Subscription sub1 = observable.subscribe();
+        System.out.println("Subscribed1");
+        Subscription sub2 = observable.subscribe();
+        System.out.println("Subscribed2");
+        sub1.unsubscribe();
+        System.out.println("Unsubscribed1");
+        sub2.unsubscribe();
+        System.out.println("Unsubscribed2");
+
     }
 
     private static void testObserve() {
